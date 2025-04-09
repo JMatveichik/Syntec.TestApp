@@ -1,7 +1,15 @@
-# .NET
-bin/
-obj/
-*.suo
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+
+# NuGet
+**/[Pp]ackages/*
+!**/[Pp]ackages/repositories.config
+
+# User-specific files
 *.user
-*.cache
+*.suo
+*.userprefs
 .vs

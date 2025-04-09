@@ -1,0 +1,45 @@
+﻿<reactiveUI:ReactiveUserControl x:Class="Syntec.TestApp.WPF.Views.AxisCoordinatesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:reactiveUI="http://reactiveui.net"
+             x:TypeArguments="models:AxisCoordinates"
+             xmlns:models="clr-namespace:Syntec.TestApp.WPF.ViewModels"
+             xmlns:local="clr-namespace:Syntec.TestApp.WPF.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Текущие координаты" FontSize="16" FontWeight="Bold"/>
+            <TextBlock Text="{Binding DecimalPlaces, StringFormat=' (Точность: {0} знака)'}" 
+                      Margin="10,0,0,0" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <DataGrid ItemsSource="{Binding AxisCoordinates}" 
+                 AutoGenerateColumns="False"
+                 IsReadOnly="True"
+                 GridLinesVisibility="None"
+                 HeadersVisibility="Column"
+                 DockPanel.Dock="Top">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Ось" Binding="{Binding AxisName}" Width="Auto"/>
+                <DataGridTextColumn Header="Машинные" 
+                                  Binding="{Binding MachineCoords, StringFormat=N3}" 
+                                  Width="*"/>
+                <DataGridTextColumn Header="Абсолютные" 
+                                  Binding="{Binding AbsoluteCoords, StringFormat=N3}" 
+                                  Width="*"/>
+                <DataGridTextColumn Header="Относительные" 
+                                  Binding="{Binding RelativeCoords, StringFormat=N3}" 
+                                  Width="*"/>
+                <DataGridTextColumn Header="Дистанция" 
+                                  Binding="{Binding DistanceToGo, StringFormat=N3}" 
+                                  Width="*"/>
+                <DataGridTextColumn Header="Ед.изм" 
+                                  Binding="{Binding Unit}" 
+                                  Width="Auto"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</reactiveUI:ReactiveUserControl>
