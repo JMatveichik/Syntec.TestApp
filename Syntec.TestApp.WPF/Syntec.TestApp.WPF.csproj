@@ -140,6 +140,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\LogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -149,7 +153,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Converters\IndexToNumberConverter.cs" />
+    <Compile Include="Converters\LogTypeToColorConverter.cs" />
+    <Compile Include="Log\ILogService.cs" />
+    <Compile Include="Utils\FixedSizeObservableCollection.cs" />
+    <Compile Include="Log\LogEntry.cs" />
+    <Compile Include="ViewModels\LogViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\ReactiveBaseModel.cs" />
     <Compile Include="Views\AxisCoordinatesView.xaml.cs">
       <DependentUpon>AxisCoordinatesView.xaml</DependentUpon>
     </Compile>
@@ -158,6 +168,9 @@
     </Compile>
     <Compile Include="Views\CncStatusView.xaml.cs">
       <DependentUpon>CncStatusView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LogView.xaml.cs">
+      <DependentUpon>LogView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -186,6 +199,60 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Resource Include="Fonts\Roboto-Black.ttf" />
+    <Resource Include="Fonts\Roboto-BlackItalic.ttf" />
+    <Resource Include="Fonts\Roboto-Bold.ttf" />
+    <Resource Include="Fonts\Roboto-BoldItalic.ttf" />
+    <Resource Include="Fonts\Roboto-ExtraBold.ttf" />
+    <Resource Include="Fonts\Roboto-ExtraBoldItalic.ttf" />
+    <Resource Include="Fonts\Roboto-ExtraLight.ttf" />
+    <Resource Include="Fonts\Roboto-ExtraLightItalic.ttf" />
+    <Resource Include="Fonts\Roboto-Italic.ttf" />
+    <Resource Include="Fonts\Roboto-Light.ttf" />
+    <Resource Include="Fonts\Roboto-LightItalic.ttf" />
+    <Resource Include="Fonts\Roboto-Medium.ttf" />
+    <Resource Include="Fonts\Roboto-MediumItalic.ttf" />
+    <Resource Include="Fonts\Roboto-Regular.ttf" />
+    <Resource Include="Fonts\Roboto-SemiBold.ttf" />
+    <Resource Include="Fonts\Roboto-SemiBoldItalic.ttf" />
+    <Resource Include="Fonts\Roboto-Thin.ttf" />
+    <Resource Include="Fonts\Roboto-ThinItalic.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-Black.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-BlackItalic.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-Bold.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-BoldItalic.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-ExtraBold.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-ExtraBoldItalic.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-ExtraLight.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-ExtraLightItalic.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-Italic.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-Light.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-LightItalic.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-Medium.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-MediumItalic.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-Regular.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-SemiBold.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-SemiBoldItalic.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-Thin.ttf" />
+    <Resource Include="Fonts\Roboto_Condensed-ThinItalic.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-Black.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-BlackItalic.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-Bold.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-BoldItalic.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-ExtraBold.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-ExtraBoldItalic.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-ExtraLight.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-ExtraLightItalic.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-Italic.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-Light.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-LightItalic.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-Medium.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-MediumItalic.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-Regular.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-SemiBold.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-SemiBoldItalic.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-Thin.ttf" />
+    <Resource Include="Fonts\Roboto_SemiCondensed-ThinItalic.ttf" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

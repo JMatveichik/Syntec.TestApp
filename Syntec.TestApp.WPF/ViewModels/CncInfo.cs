@@ -75,7 +75,10 @@ namespace Syntec.TestApp.WPF.ViewModels
         /// Инициализирует модель информации о ЧПУ.
         /// </summary>
         /// <param name="remoteCnc">Подключение к ЧПУ Syntec.</param>
-        public CncInfo(SyntecRemoteCNC remoteCnc) : base(remoteCnc) { }
+        public CncInfo(SyntecRemoteCNC remoteCnc) : base(remoteCnc) 
+        {
+            OnNotification($"Инициализирован сбор информации о ЧПУ");
+        }
 
         /// <summary>
         /// Обновляет внутреннее состояние модели, запрашивая актуальные данные с ЧПУ.
@@ -87,9 +90,12 @@ namespace Syntec.TestApp.WPF.ViewModels
             {
                 if (RemoteCnc?.isConnected() != true)
                 {
+                    OnNotification("Нет подключения к ЧПУ", NotificationType.Warning);
                     ResetToDefault();
                     return;
                 }
+
+                OnNotification("Запрос информации о ЧПУ...", NotificationType.Debug);
 
                 short result = RemoteCnc.READ_information(
                     out short axes,
@@ -107,15 +113,18 @@ namespace Syntec.TestApp.WPF.ViewModels
                     Series = series;
                     NcVersion = ncVersion;
                     AxisNames = axisNames ?? Array.Empty<string>();
+
+                    OnNotification($"Получена информация о ЧПУ: {CncType} v{NcVersion}");
                 }
                 else
                 {
+                    OnNotification($"Ошибка чтения информации. Код: {result}", NotificationType.Error);
                     throw new Exception($"Ошибка чтения информации. Код: {result}");
                 }
             }
             catch (Exception ex)
             {
-                //TODO : В реальном приложении добавить здесь логгирование
+                OnNotification($"Ошибка при обновлении информации: {ex.Message}", NotificationType.Error);  
                 ResetToDefault();
                 throw ex;
             }

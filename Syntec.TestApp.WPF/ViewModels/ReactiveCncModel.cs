@@ -10,9 +10,8 @@ namespace Syntec.TestApp.WPF.ViewModels
     /// Абстрактный базовый класс для всех моделей данных ЧПУ Syntec.
     /// Автоматически обновляет состояние при изменении подключения к ЧПУ.
     /// </summary>
-    public abstract class ReactiveCncModel : ReactiveObject, IDisposable
+    public abstract class ReactiveCncModel : ReactiveBaseModel
     {
-        private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private SyntecRemoteCNC _remoteCnc;
 
         /// <summary>
@@ -35,7 +34,7 @@ namespace Syntec.TestApp.WPF.ViewModels
         /// Инициализирует модель с указанным подключением к ЧПУ.
         /// </summary>
         /// <param name="remoteCnc">Экземпляр подключения к ЧПУ Syntec.</param>
-        protected ReactiveCncModel(SyntecRemoteCNC remoteCnc)
+        protected ReactiveCncModel(SyntecRemoteCNC remoteCnc) : base()
         {
             RemoteCnc = remoteCnc;
 
@@ -43,7 +42,7 @@ namespace Syntec.TestApp.WPF.ViewModels
             this.WhenAnyValue(x => x.RemoteCnc)
                 .Skip(1) // Пропускаем инициализацию
                 .Subscribe(_ => UpdateInternalState())
-                .DisposeWith(_disposables);
+                .DisposeWith(Disposables);
         }
 
         /// <summary>
@@ -51,13 +50,6 @@ namespace Syntec.TestApp.WPF.ViewModels
         /// Должен быть реализован в производных классах.
         /// </summary>
         public abstract void UpdateInternalState();
-
-        /// <summary>
-        /// Освобождает все ресурсы, связанные с моделью.
-        /// </summary>
-        public void Dispose()
-        {
-            _disposables?.Dispose();
-        }
+        
     }
 }

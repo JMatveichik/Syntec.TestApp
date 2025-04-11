@@ -1,7 +1,9 @@
 ﻿<Application x:Class="Syntec.TestApp.WPF.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Syntec.TestApp.WPF"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"         
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:converters ="clr-namespace:Syntec.TestApp.WPF.Converters"
+             xmlns:local="clr-namespace:Syntec.TestApp.WPF"            
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -12,9 +14,31 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 
                 <!-- Theme setting -->
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />                
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
                 
+                <!-- Переопределение шрифта -->
+                <ResourceDictionary>
+                    <FontFamily x:Key="MahApps.Fonts.Family">pack://application:,,,/Syntec.TestApp.WPF;component/Fonts/#Roboto Condensed</FontFamily>
+
+                    <!-- Дополнительные настройки (опционально) -->
+                    <sys:Double x:Key="MahApps.Fonts.Size">18</sys:Double>
+                    <sys:Double x:Key="MahApps.Fonts.LineHeight">1.25</sys:Double>
+                    
+                </ResourceDictionary>
+
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- 3. Принудительное применение шрифта ко всем элементам (страховка) -->
+            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                <Setter Property="FontFamily" Value="{StaticResource MahApps.Fonts.Family}"/>
+            </Style>
+
+            <Style TargetType="{x:Type Control}" BasedOn="{StaticResource {x:Type Control}}">
+                <Setter Property="FontFamily" Value="{StaticResource MahApps.Fonts.Family}"/>
+            </Style>
+            
+            <converters:LogTypeToColorConverter x:Key="LogTypeToColorConverter"/>
+            
         </ResourceDictionary>
 
     </Application.Resources>

@@ -16,7 +16,7 @@
                       Margin="10,0,0,0" VerticalAlignment="Center"/>
         </StackPanel>
 
-        <DataGrid ItemsSource="{Binding AxisCoordinates}" 
+        <DataGrid ItemsSource="{Binding}" 
                  AutoGenerateColumns="False"
                  IsReadOnly="True"
                  GridLinesVisibility="None"

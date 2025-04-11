@@ -5,10 +5,14 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Reactive.Concurrency;
+using Syntec.TestApp.WPF.Utils;
+using Syntec.TestApp.WPF.Log;
+using System.Reactive.Disposables;
 
 namespace Syntec.TestApp.WPF.ViewModels
 {
-    public class MainViewModel : ReactiveObject, IScreen
+    public class MainViewModel : ReactiveBaseModel
     {
         private string _host = "127.0.0.1";
         private int _timeout = 5000;
@@ -16,15 +20,33 @@ namespace Syntec.TestApp.WPF.ViewModels
         private string _statusMessage = "Не подключено";
 
         // Модели данных
+        
+        //Общая информация о ЧПУ
         public CncInfo CncInfo { get; }
+
+        //Текущее состояние ЧПУ
         public CncStatus CncStatus { get; }
+        
+        //Текущие координаты по осям ЧПУ
         public AxisCoordinates AxisCoordinates { get; }
 
+        public LogViewModel LogViewModel { get; }
+
         // Команды
+
+        // Команда для подключения к ЧПУ 
         public ReactiveCommand<Unit, Unit> ConnectCommand { get; }
+
+        // Команда для отключения от ЧПУ
         public ReactiveCommand<Unit, Unit> DisconnectCommand { get; }
+
+        // Команда для запуска опроса 
         public ReactiveCommand<Unit, Unit> StartPollingCommand { get; }
+
+        // Команда для остановки опроса 
         public ReactiveCommand<Unit, Unit> StopPollingCommand { get; }
+
+        
 
         // Свойства
         public string Host
@@ -59,13 +81,25 @@ namespace Syntec.TestApp.WPF.ViewModels
             //
             var cncConnection = new SyntecRemoteCNC(Host, Timeout);
 
+
+            SubscribeToNotifications(this);
+
             // Инициализация моделей
+            LogViewModel      = new LogViewModel();
+
             CncInfo           = new CncInfo(cncConnection);
             CncStatus         = new CncStatus(cncConnection);
             AxisCoordinates   = new AxisCoordinates(cncConnection);
+            
+
+            // Подписка на уведомления от моделей
+            SubscribeToNotifications(CncInfo);
+            SubscribeToNotifications(CncStatus);
+            SubscribeToNotifications(AxisCoordinates);
 
             // Настройка команд
-            // Создаем observables для условий выполнения команд
+
+            // Создаем observables для условий возможности выполнения команд
             var canConnect = this.WhenAnyValue(x => x.IsConnected)
                                .Select(connected => !connected);
 
@@ -81,9 +115,25 @@ namespace Syntec.TestApp.WPF.ViewModels
             // Настройка команд с параметрами canExecute
             ConnectCommand      = ReactiveCommand.CreateFromTask(ConnectAsync, canConnect);
             DisconnectCommand   = ReactiveCommand.Create(Disconnect, canDisconnect);
+
             StartPollingCommand = ReactiveCommand.CreateFromTask(StartPollingAsync, canStartPolling);
-            StopPollingCommand  = ReactiveCommand.Create(StopPolling, canStopPolling);
+            StopPollingCommand  = ReactiveCommand.Create(StopPolling, canStopPolling);            
         }
+
+        private void SubscribeToNotifications(ReactiveBaseModel model)
+        {
+            model.Notifications
+                .ObserveOn(RxApp.MainThreadScheduler) // Для UI-операций
+                .Subscribe(args =>
+                {
+                    LogViewModel.AddEntry(new LogEntry(
+                        args.Message,
+                        args.Type,
+                        model.GetType().Name.Replace("ViewModel", "")));
+                })
+                .DisposeWith(Disposables);
+        }
+
 
         private async Task ConnectAsync()
         {
@@ -103,16 +153,14 @@ namespace Syntec.TestApp.WPF.ViewModels
                 else
                 {
                     StatusMessage = "Ошибка подключения";
-                    MessageBox.Show("Не удалось подключиться к ЧПУ", "Ошибка",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    OnNotification($"Не удалось подключиться к ЧПУ ({Host})", NotificationType.Error);
                 }
             }
             catch (Exception ex)
             {
                 IsConnected = false;
                 StatusMessage = "Ошибка подключения";
-                MessageBox.Show($"Ошибка подключения: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                OnNotification($"Ошибка подключения: {ex.Message}", NotificationType.Error);
             }
         }
 
@@ -129,8 +177,7 @@ namespace Syntec.TestApp.WPF.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка отключения: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                OnNotification($"Ошибка отключения: {ex.Message}", NotificationType.Error);
             }
         }
 

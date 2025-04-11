@@ -81,7 +81,10 @@ namespace Syntec.TestApp.WPF.ViewModels
             private set => this.RaiseAndSetIfChanged(ref _emergencyStop, value);
         }
 
-        public CncStatus(SyntecRemoteCNC remoteCnc) : base(remoteCnc) { }
+        public CncStatus(SyntecRemoteCNC remoteCnc) : base(remoteCnc) 
+        {
+            OnNotification($"Инициализирован мониторинг статуса ЧПУ");
+        }
 
         /// <summary>
         /// Обновляет статусную информацию с ЧПУ.
@@ -92,10 +95,13 @@ namespace Syntec.TestApp.WPF.ViewModels
             {
                 if (RemoteCnc?.isConnected() != true)
                 {
+                    OnNotification("Нет подключения к ЧПУ", NotificationType.Warning);
                     ResetToDefault();
                     return;
                 }
 
+                OnNotification("Запрос статуса ЧПУ...", NotificationType.Debug);
+                    
                 short result = RemoteCnc.READ_status(
                     out string mainProg,
                     out string curProg,
@@ -114,10 +120,13 @@ namespace Syntec.TestApp.WPF.ViewModels
                     Status = status ?? "N/A";
                     Alarm = alarm ?? "N/A";
                     EmergencyStop = emg ?? "N/A";
+
+                    OnNotification($"Статус обновлен: {Status}, Режим: {Mode}");
                 }
             }
-            catch
+            catch(Exception ex)
             {
+                OnNotification($"Ошибка при обновлении статуса: {ex.Message}", NotificationType.Error);
                 ResetToDefault();
             }
         }

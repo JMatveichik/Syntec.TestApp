@@ -27,6 +27,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="250"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -85,14 +86,21 @@
                 <Button Content="Остановить опрос" 
                 Command="{Binding StopPollingCommand}" 
                 Width="120"/>
+
+                <TextBlock 
+                    Text="Тест шрифта: 123 Русский текст"
+                    FontFamily="pack://application:,,,/Syntec.TestApp.WPF;component/Fonts/#Roboto Condensed"
+                    FontSize="20"/>
             </StackPanel>
 
             <views:AxisCoordinatesView Grid.Row="1" DataContext="{Binding AxisCoordinates}"/>
         </Grid>
+
+
+        <views:LogView Grid.Row="3" Grid.ColumnSpan="2" DataContext="{Binding LogViewModel}"/>
         
-       
         <!-- Статус бар -->
-        <StatusBar Grid.Row="3" Grid.ColumnSpan="2">
+        <StatusBar Grid.Row="4" Grid.ColumnSpan="2">
             <StatusBarItem>
                 <TextBlock Text="{Binding StatusMessage}"/>
             </StatusBarItem>

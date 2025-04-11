@@ -91,10 +91,15 @@ namespace Syntec.TestApp.WPF.ViewModels
 
         public async Task StartPollingAsync(TimeSpan interval)
         {
-            if (IsPolling) 
+            if (IsPolling)
+            {
+                OnNotification("Опрос уже запущен", NotificationType.Warning);
                 return;
+            }
+                
 
             IsPolling = true;
+            OnNotification($"Запуск опроса координат с интервалом {interval.TotalSeconds} сек");
 
             try
             {
@@ -107,6 +112,7 @@ namespace Syntec.TestApp.WPF.ViewModels
             finally
             {
                 IsPolling = false;
+                OnNotification("Опрос координат остановлен", NotificationType.Warning);
             }
         }
 
@@ -115,7 +121,10 @@ namespace Syntec.TestApp.WPF.ViewModels
             IsPolling = false;
         }
 
-        public AxisCoordinates(SyntecRemoteCNC remoteCnc) : base(remoteCnc) { }
+        public AxisCoordinates(SyntecRemoteCNC remoteCnc) : base(remoteCnc) 
+        {
+            OnNotification($"Инициализирован мониторинг координат");
+        }
 
         public override void UpdateInternalState()
         {
@@ -123,9 +132,12 @@ namespace Syntec.TestApp.WPF.ViewModels
             {
                 if (RemoteCnc?.isConnected() != true)
                 {
+                    OnNotification("Нет подключения к ЧПУ", NotificationType.Warning);
                     ResetToDefault();
                     return;
                 }
+
+                OnNotification("Запрос текущих координат...", NotificationType.Debug);
 
                 short result = RemoteCnc.READ_position(
                     out string[] axisNames,
@@ -145,10 +157,17 @@ namespace Syntec.TestApp.WPF.ViewModels
                     AbsoluteCoords = absolute ?? Array.Empty<float>();
                     RelativeCoords = relative ?? Array.Empty<float>();
                     DistanceToGo = distance ?? Array.Empty<float>();
+
+                    OnNotification($"Координаты обновлены (осей: {AxisNames.Length})", NotificationType.Debug);
+                }
+                else
+                {
+                    OnNotification($"Ошибка чтения координат. Код: {result}", NotificationType.Error);
                 }
             }
-            catch
+            catch(Exception ex)
             {
+                OnNotification($"Ошибка при обновлении координат: {ex.Message}", NotificationType.Error);
                 ResetToDefault();
             }
         }
