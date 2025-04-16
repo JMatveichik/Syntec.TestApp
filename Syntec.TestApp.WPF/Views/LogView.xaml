@@ -11,15 +11,54 @@
     mc:Ignorable="d"
     d:DesignHeight="300" d:DesignWidth="600">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <GroupBox Header="СИСТЕМНЫЕ СООБЩЕНИЯ" Margin="5">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <ToolBar Grid.Row="0">
+                
+                <Button Content="Очистить" 
+                        Command="{Binding ClearLogCommand}"/>
+                
+                <ComboBox ItemsSource="{Binding LogLevels}" 
+                          SelectedItem="{Binding SelectedLogLevel}"/>
+            </ToolBar>
+            
+            <ListView Grid.Row="1" 
+                      ItemsSource = "{Binding FilteredEntries}">
+                
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Время" 
+                                        Width="Auto"
+                                        DisplayMemberBinding="{Binding TimestampString}"/>
+
+                        <GridViewColumn Header="Тип" 
+                                        Width="Auto"
+                                        DisplayMemberBinding="{Binding Type}"/>
+
+                        <GridViewColumn Header="Источник" 
+                                        Width="Auto"
+                                        DisplayMemberBinding="{Binding Source}"/>
+
+                        <GridViewColumn Header="Сообщение" 
+                                        Width="Auto"
+                                        DisplayMemberBinding="{Binding Message}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+
+        <!--
+    
 
         <ToolBar Grid.Row="0">
             <Button Content="Очистить" Command="{Binding ClearLogCommand}"/>
-            <ComboBox ItemsSource="{Binding LogLevels}" SelectedItem="{Binding SelectedLogLevel}"/>
+            <ComboBox ItemsSource="{Binding LogLevels}" 
+                      SelectedItem="{Binding SelectedLogLevel}"/>
         </ToolBar>
 
         <DataGrid Grid.Row="1" 
@@ -27,18 +66,21 @@
                  AutoGenerateColumns="False"
                  IsReadOnly="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Время" Binding="{Binding TimestampString}" Width="Auto"/>
-                <DataGridTextColumn Header="Тип" Binding="{Binding Type}" Width="Auto">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Foreground" 
-                                    Value="{Binding Type, Converter={StaticResource LogTypeToColorConverter}}"/>
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>
-                <DataGridTextColumn Header="Источник" Binding="{Binding Source}" Width="Auto"/>
-                <DataGridTextColumn Header="Сообщение" Binding="{Binding Message}" Width="*"/>
+                <DataGridTextColumn Header="Время" 
+                                    Binding="{Binding TimestampString}" 
+                                    Width="Auto"/>
+                <DataGridTextColumn Header="Тип" 
+                                    Binding="{Binding Type}" 
+                                    Width="Auto"/>
+                 <DataGridTextColumn Header="Источник" 
+                                     Binding="{Binding Source}"
+                                     Width="Auto"/>
+                <DataGridTextColumn Header="Сообщение" 
+                                    Binding="{Binding Message}" 
+                                    Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
+        -->
+    </GroupBox>
 </reactiveUI:ReactiveUserControl>

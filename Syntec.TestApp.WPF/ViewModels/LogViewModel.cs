@@ -53,20 +53,20 @@ namespace Syntec.TestApp.WPF.ViewModels
             _entries = new FixedSizeObservableCollection<LogEntry>(MaxEntries);
             _latestEntries = new ReadOnlyObservableCollection<LogEntry>(_entries);
 
-            // 1. Создаем поток изменений коллекции (преобразуем в Unit)
+            //  Создаем поток изменений коллекции (преобразуем в Unit)
             var collectionChanges = Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
                 h => _entries.CollectionChanged += h,
                 h => _entries.CollectionChanged -= h)
                 .Select(_ => Unit.Default);
 
-            // 2. Создаем поток изменений MinLogLevel (тоже преобразуем в Unit)
+            //  Создаем поток изменений MinLogLevel (тоже преобразуем в Unit)
             var levelChanges = this.WhenAnyValue(x => x.SelectedLogLevel)
                 .Select(_ => Unit.Default);
 
-            // 3. Объединяем оба потока
+            //  Объединяем оба потока
             var allChanges = Observable.Merge(collectionChanges, levelChanges);
 
-            // 4. Применяем фильтрацию при любых изменениях
+            //  Применяем фильтрацию при любых изменениях
             allChanges
                 .Select(_ => new ReadOnlyObservableCollection<LogEntry>(
                     new ObservableCollection<LogEntry>(

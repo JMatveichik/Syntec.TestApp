@@ -35,11 +35,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CalcBinding, Version=2.5.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CalcBinding.2.5.2\lib\net45\CalcBinding.dll</HintPath>
+    </Reference>
     <Reference Include="ControlzEx, Version=4.0.0.0, Culture=neutral, PublicKeyToken=69f1c32f803d307e, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.4.4.0\lib\net462\ControlzEx.dll</HintPath>
     </Reference>
     <Reference Include="DynamicData, Version=9.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DynamicData.9.1.2\lib\net462\DynamicData.dll</HintPath>
+    </Reference>
+    <Reference Include="DynamicExpresso.Core, Version=2.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DynamicExpresso.Core.2.3.1\lib\net461\DynamicExpresso.Core.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro, Version=2.0.0.0, Culture=neutral, PublicKeyToken=51482d6f650b2b3f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.2.4.10\lib\net47\MahApps.Metro.dll</HintPath>
@@ -49,6 +55,9 @@
     </Reference>
     <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.19\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="ReactiveUI, Version=20.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ReactiveUI.20.2.45\lib\net472\ReactiveUI.dll</HintPath>
@@ -140,6 +149,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\FunctionInfoView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\LogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -152,14 +165,18 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Converters\CheckBoxListConverter.cs" />
     <Compile Include="Converters\IndexToNumberConverter.cs" />
+    <Compile Include="Converters\JsonFormatConverter.cs" />
     <Compile Include="Converters\LogTypeToColorConverter.cs" />
     <Compile Include="Log\ILogService.cs" />
     <Compile Include="Utils\FixedSizeObservableCollection.cs" />
     <Compile Include="Log\LogEntry.cs" />
     <Compile Include="ViewModels\LogViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\Parameter.cs" />
     <Compile Include="ViewModels\ReactiveBaseModel.cs" />
+    <Compile Include="ViewModels\RemoteFunctionModel.cs" />
     <Compile Include="Views\AxisCoordinatesView.xaml.cs">
       <DependentUpon>AxisCoordinatesView.xaml</DependentUpon>
     </Compile>
@@ -168,6 +185,9 @@
     </Compile>
     <Compile Include="Views\CncStatusView.xaml.cs">
       <DependentUpon>CncStatusView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FunctionInfoView.xaml.cs">
+      <DependentUpon>FunctionInfoView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LogView.xaml.cs">
       <DependentUpon>LogView.xaml</DependentUpon>

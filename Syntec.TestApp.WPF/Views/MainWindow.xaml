@@ -4,14 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Syntec.TestApp.WPF"
-        xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"       
         xmlns:views="clr-namespace:Syntec.TestApp.WPF.Views"
         xmlns:vm="clr-namespace:Syntec.TestApp.WPF.ViewModels"
+        xmlns:cb="clr-namespace:CalcBinding;assembly=CalcBinding"
+        xmlns:converters="clr-namespace:Syntec.TestApp.WPF.Converters"
         mc:Ignorable="d"
         Title="Syntec CNC Monitor" 
         Height="800" 
         Width="1200"
         WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
         GlowBrush="{DynamicResource MahApps.Brushes.Accent}">
 
     <Window.DataContext>
@@ -20,20 +23,18 @@
 
     <metro:MetroWindow.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+        <converters:CheckBoxListConverter x:Key="CheckBoxListConverter"/>
+        <converters:JsonFormatConverter x:Key="JsonConverter"/>
     </metro:MetroWindow.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="250"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="150"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
 
         <!-- Панель подключения -->
         <GroupBox Grid.Row="0" 
@@ -61,44 +62,280 @@
             </StackPanel>
         </GroupBox>
 
-        <views:CncInfoView Grid.Row="1"
-                           Grid.Column="0"
-                           Margin="5"
-                           DataContext="{Binding CncInfo}"/>
+        <metro:MetroTabControl Grid.Row="1" Grid.ColumnSpan="2">
 
-        <views:CncStatusView Grid.Column="1"
-                             Grid.Row ="1"
-                             Margin="5"
-                             DataContext="{Binding CncStatus}"/>
+            <metro:MetroTabItem Header="Тестирование">
+                <Grid Margin="5">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="300"/>
+                    </Grid.ColumnDefinitions>
+
+                    <GroupBox 
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Header="Доступные функции">                       
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!--фильтрация-->
+                            <StackPanel Grid.Row="0" 
+                                        Orientation="Vertical" 
+                                        Margin="5">
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Text="Фильтр по тегам:" 
+                                               VerticalAlignment="Center" 
+                                               Margin="0,0,5,0"/>
+                                     <!--
+                                    <Button Grid.Column="2"
+                                            Margin="2"
+                                            Width="22" Height="22" 
+                                            Content="x"
+                                            Command="{Binding ClearFilterCommand}"/>
+
+                                   
+                                    <Button Grid.Column="1"
+                                            Margin="2"
+                                            Width="22" Height="22" 
+                                            Content="o"/>
+                                    -->
+                                </Grid>
+                                
 
 
-        <Grid Grid.Row="2" Grid.ColumnSpan="2" Margin="5">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+                                <ListBox ItemsSource="{Binding AllTags}"
+                                         SelectionMode="Single"
+                                         BorderThickness="1"
+                                         Style="{StaticResource MahApps.Styles.ListBox}"
+                                         MaxHeight="150"                                         
+                                         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                    
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Content="{Binding .}"                                                      
+                                                      
+                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, 
+                                                                        Path=DataContext.ToggleTagCommand}"
+                                                      
+                                                      CommandParameter="{Binding .}">
 
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                <Button Content="Начать опрос" 
-                Command="{Binding StartPollingCommand}" 
-                Width="120" Margin="0,0,10,0"/>
+                                                <CheckBox.IsChecked>
+                                                    <MultiBinding Converter="{StaticResource CheckBoxListConverter}"
+                                                                Mode="OneWay">
+                                                        <Binding Path="DataContext.SelectedTags" 
+                                                                RelativeSource="{RelativeSource AncestorType=ListBox}"/>
+                                                        <Binding Path="."/>
+                                                    </MultiBinding>
+                                                </CheckBox.IsChecked>
+                                            </CheckBox>
+                                        
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                    
+                                </ListBox>
 
-                <Button Content="Остановить опрос" 
-                Command="{Binding StopPollingCommand}" 
-                Width="120"/>
+                            </StackPanel>
+                            
+                            <ListBox
+                                Grid.Row="1"
+                                ItemsSource="{Binding FilteredFunctions}"
+                                SelectedItem="{Binding SelectedFunction}"
+                                Margin="3,3,3,3">
 
-                <TextBlock 
-                    Text="Тест шрифта: 123 Русский текст"
-                    FontFamily="pack://application:,,,/Syntec.TestApp.WPF;component/Fonts/#Roboto Condensed"
-                    FontSize="20"/>
-            </StackPanel>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="{StaticResource MahApps.Brushes.Accent}" 
+                                             BorderThickness="0,0,0,1">
+                                            <StackPanel Margin="0, 2">
+                                                <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14"/>
+                                                <TextBlock Text="{Binding Description}" FontSize="11"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
 
-            <views:AxisCoordinatesView Grid.Row="1" DataContext="{Binding AxisCoordinates}"/>
-        </Grid>
+                            </ListBox>
+                            <Button Content="Выполнить"  
+                                    Grid.Row="2" 
+                                    Margin="5,5,5,5"
+                                    Command="{Binding SelectedFunction.ExecuteCommand}" Grid.ColumnSpan="2"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox 
+                        DataContext="{Binding SelectedFunction}"
+                        Margin="5,0"
+                        Header="Описание функции"
+                        Grid.Row="0"
+                        Grid.Column="1">
+
+                        <ContentControl Content="{Binding}">
+                            <ContentControl.Style>
+                                <Style TargetType="ContentControl">
+                                    <!-- Шаблон по умолчанию (когда функция выбрана) -->
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <views:FunctionInfoView/>
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+
+                                    <!-- Когда функция НЕ выбрана -->
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="Выберите функцию" 
+                                                                   FontSize="44" 
+                                                                   VerticalAlignment="Center"
+                                                                   HorizontalAlignment="Center">
+                                                            
+                                                            <TextBlock.Foreground>
+                                                                <SolidColorBrush x:Name="AnimatedBrush" Color="LightGray"/>
+                                                            </TextBlock.Foreground>
+                                                            
+                                                            <TextBlock.Triggers>
+                                                                <EventTrigger RoutedEvent="Loaded">
+                                                                    <BeginStoryboard>
+                                                                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                                                            <ColorAnimation Storyboard.TargetName="AnimatedBrush"
+                                                                                            Storyboard.TargetProperty="Color"
+                                                                                            From="LightGray"
+                                                                                            To="DeepSkyBlue"
+                                                                                            Duration="0:0:2"/>
+                                                                        </Storyboard>
+                                                                    </BeginStoryboard>
+                                                                </EventTrigger>
+                                                            </TextBlock.Triggers>
+                                                            
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ContentControl.Style>
+                        </ContentControl>
+
+                    </GroupBox>
+
+                    <GroupBox 
+                        DataContext="{Binding SelectedFunction}"
+                        Margin="5,0"
+                        Header="Результат"
+                        Grid.Row="0"
+                        Grid.Column="2">
+
+                        <Grid>                            
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <TextBox 
+                                    VerticalAlignment="Stretch"
+                                    IsReadOnly="True"
+                                    Text="{Binding Result, Converter={StaticResource JsonConverter}}"
+                                    Margin="5"
+                                    TextWrapping="Wrap"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </GroupBox>
+
+                </Grid>
+
+            </metro:MetroTabItem>
 
 
-        <views:LogView Grid.Row="3" Grid.ColumnSpan="2" DataContext="{Binding LogViewModel}"/>
-        
+            <metro:MetroTabItem Header="Опрос">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+
+                    <views:CncInfoView 
+                               Grid.Row="1"
+                               Grid.Column="0"
+                               Margin="5"
+                               DataContext="{Binding CncInfo}"/>
+
+                    <views:CncStatusView 
+                                Grid.Row ="1"
+                                Grid.Column="1"
+                                Margin="5"
+                                DataContext="{Binding CncStatus}"/>
+
+                    <GroupBox  
+                        Grid.Row="2" 
+                        Grid.ColumnSpan="2"
+                        Header ="Координаты"
+                        Margin="5">
+                        <Grid Margin="5">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+
+                                <Button Content="Начать опрос" 
+                                        Command="{Binding StartPollingCommand}" 
+                                        Width="120" Margin="0,0,10,0"/>
+
+                                <Button Content="Остановить опрос" 
+                                        Command="{Binding StopPollingCommand}" 
+                                        Width="120"/>
+
+                            </StackPanel>
+
+                            <views:AxisCoordinatesView Grid.Row="1" DataContext="{Binding AxisCoordinates}"/>
+
+                        </Grid>
+                    </GroupBox>
+
+                </Grid>
+            </metro:MetroTabItem>
+        </metro:MetroTabControl>
+
+
+        <GridSplitter Grid.Row="2" 
+                      Grid.ColumnSpan="2"
+                      ShowsPreview="False" 
+                      Height="2"
+                      Foreground="{StaticResource MahApps.Brushes.Accent}"
+                      HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Center"/>
+
+
+        <views:LogView Grid.Row="3" 
+                       Grid.ColumnSpan="2" 
+                       DataContext="{Binding LogViewModel}"/>
+
+
         <!-- Статус бар -->
         <StatusBar Grid.Row="4" Grid.ColumnSpan="2">
             <StatusBarItem>
@@ -109,6 +346,17 @@
                 <metro:ProgressRing IsActive="{Binding AxisCoordinates.IsPolling}" 
                                    Width="20" 
                                    Height="20"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock>
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="Доступные функции: {0} из {1}">
+                        <Binding Path="FilteredFunctions.Count"/>
+                        <Binding Path="Functions.Count"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+                </TextBlock>
             </StatusBarItem>
         </StatusBar>
     </Grid>
